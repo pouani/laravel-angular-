@@ -1,0 +1,116 @@
+<!doctype html>
+<html ng-app="orderApp">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="angular.js"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body class="h-screen flex justify-center p-8 text-gray-600" ng-controller="OrderController as submit">
+    <div ng-show="!isLogged" class="h-fit px-4 pt-5 pb-4 overflow-hidden text-left bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-sm sm:p-6 sm:align-middle">
+                
+        <h2 class="text-2xl font-bold">S'authentifier et Commander</h2>
+        <form class="mt-4" action="#" ng-submit="submit.login()" >
+            <label class="block mt-3" for="email">
+                <input ng-model="user.email" type="email" name="email" id="email" placeholder="david@gmail.com" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40" />
+            </label>
+
+            <label class="block mt-3" for="password">
+                <input ng-model="user.password" type="password" name="password" id="password" placeholder="......." class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40" />
+            </label>
+            <div class="mt-4">
+                <button ng-click="submit.login()" type="button" class="w-full px-4 py-2 mt-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-md sm:mt-0 sm:w-1/2 sm:mx-2 hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40">
+                    Je me connecte
+                </button>
+            </div>
+        </form>
+    </div>
+    <div ng-show="isLogged">
+        <h2 class="text-3xl font-bold">Gestion de commande</h2>
+        <div class="mt-4">
+            <div x-data="{ open: true }" class="relative flex justify-center">
+                <button 
+                    ng-click="open = true"
+                    class="px-6 py-2 font-medium text-white transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80">
+                    Nouvelle Commande
+                </button>
+            
+                <div 
+                    class="fixed inset-0 z-10 overflow-y-auto bg-blur" 
+                    aria-labelledby="modal-title" role="dialog" aria-modal="true"
+                    ng-class="{'hidden': !open}"
+                >
+                    <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                        <span class="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">&#8203;</span>
+            
+                            <div class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-sm sm:p-6 sm:align-middle">
+                                
+                                <form class="mt-4" action="#">
+                                    <select 
+                                        class="border border-gray-300 text-gray-900 text-sm rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 block w-full px-4 py-3"
+                                        ng-model="selectedProduct" ng-options="product.id as product.name for product in products">
+                                        <option value="">Sélectionnez un produit</option>
+                                        <option value="">{{product}}</option>
+
+                                      </select>
+                                      {{selectedProduct}}
+                                    <label class="block mt-3" for="quantity">
+                                        <input ng-model="newOrder.quantity" type="number" name="quantity" id="quantity" placeholder="quantité" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40" />
+                                    </label>
+
+                                    <label class="block mt-3" for="email">
+                                        <input disabled type="text" name="price" id="price" placeholder="prix" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40" />
+                                    </label>
+                                    <div class="mt-4 sm:flex sm:items-center sm:-mx-2">
+                                        <button type="button" ng-click="open = false" class="w-full px-4 py-2 text-sm font-medium tracking-wide text-gray-700 capitalize transition-colors duration-300 transform border border-gray-200 rounded-md sm:w-1/2 sm:mx-2 hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
+                                            Annuler
+                                        </button>
+            
+                                        <button 
+                                            ng-click="submit.addOrder()"
+                                            type="button" class="w-full px-4 py-2 mt-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-md sm:mt-0 sm:w-1/2 sm:mx-2 hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40">
+                                            Ajouter
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+        <div class="relative overflow-x-auto mt-6">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">Numero commande</th>
+                        <th scope="col" class="px-6 py-3">Produit</th>
+                        <th scope="col" class="px-6 py-3">Quantite</th>
+                        <th scope="col" class="px-6 py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="order in orders" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <td class="px-6 py-4">{{order.order_number}}</td>
+                        <td class="px-6 py-4">{{order.product_id }}</td>
+                        <td class="px-6 py-4 cursor-pointer">
+                            <span ng-if="!order.edit" ng-click="order.edit = true" ng-if="!order.editMode">{{order.quantity}}</span>
+                            <input ng-if="order.edit" ng-model="order.quantity" type="number" class="block w-full px-4 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40" />
+                        </td>
+                        <td class="px-6 py-4 flex gap-2">
+                            <button ng-click="submit.deleteOrder(order)" type="submit" ng-click="open = false" class="bg-red-500 w-full px-4 py-2 text-sm font-medium tracking-wide text-gray-700 capitalize transition-colors duration-300 transform border border-gray-200 rounded-md sm:w-1/2 sm:mx-2 hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
+                                Supprimer
+                            </button>
+                            <button ng-click="submit.updateOrder(order)" type="submit" ng-click="open = false" class="bg-blue-500 w-full px-4 py-2 text-sm font-medium tracking-wide text-gray-700 capitalize transition-colors duration-300 transform border border-gray-200 rounded-md sm:w-1/2 sm:mx-2 hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
+                                Modifier
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+  </body>
+</html>
